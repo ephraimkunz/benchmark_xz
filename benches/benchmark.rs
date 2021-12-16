@@ -10,7 +10,7 @@ fn bench_decompression(c: &mut Criterion) {
     group.sample_size(10);
     group.measurement_time(Duration::from_secs(20));
 
-    const FILENAME: &str = "3167.xz";
+    const FILENAME: &str = "data/3167.xz";
 
     group.bench_function(BenchmarkId::new("xz2", FILENAME), |b| {
         b.iter_batched(
