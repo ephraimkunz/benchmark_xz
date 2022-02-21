@@ -1,14 +1,30 @@
+use std::io::BufReader;
+use std::io::Read;
+
+const FILENAME: &str = "data/3167.xz";
+
 fn main() {
     println!(
         "Run \"cargo test --release\" to test that all the XZ libraries return the same result."
     );
     println!("Run \"cargo criterion\" to benchmark all the XZ libraries.");
+
+    xz2_decompress();
+}
+
+fn xz2_decompress() -> Vec<u8> {
+    let mut output = Vec::new();
+    let r = BufReader::new(std::fs::File::open(FILENAME).expect("Couldn't open xz file"));
+    xz2::bufread::XzDecoder::new(r)
+        .read_to_end(&mut output)
+        .expect("read to end");
+    output
 }
 
 #[cfg(test)]
 mod tests {
     use std::io::BufReader;
-    use std::io::Read;
+    use super::xz2_decompress;
 
     const FILENAME: &str = "data/3167.xz";
 
@@ -16,15 +32,6 @@ mod tests {
         let mut output = Vec::new();
         let mut r = BufReader::new(std::fs::File::open(FILENAME).expect("Couldn't open xz file"));
         lzma_rs::xz_decompress(&mut r, &mut output).expect("xz_decompress in lzma_rs");
-        output
-    }
-
-    fn xz2_decompress() -> Vec<u8> {
-        let mut output = Vec::new();
-        let r = BufReader::new(std::fs::File::open(FILENAME).expect("Couldn't open xz file"));
-        xz2::bufread::XzDecoder::new(r)
-            .read_to_end(&mut output)
-            .expect("read to end");
         output
     }
 

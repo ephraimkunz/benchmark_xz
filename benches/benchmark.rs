@@ -5,12 +5,12 @@ use std::{
 
 use criterion::{criterion_group, criterion_main, BatchSize, BenchmarkId, Criterion};
 
-fn bench_decompression(c: &mut Criterion) {
-    let mut group = c.benchmark_group("decompression");
+const FILENAME: &str = "data/3167.xz";
+
+fn bench_decomp(c: &mut Criterion) {
+    let mut group = c.benchmark_group("decomp");
     group.sample_size(10);
     group.measurement_time(Duration::from_secs(20));
-
-    const FILENAME: &str = "data/3167.xz";
 
     group.bench_function(BenchmarkId::new("xz2", FILENAME), |b| {
         b.iter_batched(
@@ -59,13 +59,9 @@ fn bench_decompression(c: &mut Criterion) {
     group.finish();
 }
 
-fn get_file_reader(filename: &str) -> impl Read {
-    std::fs::File::open(filename).expect("Couldn't open xz file")
-}
-
 fn get_buffered_file_reader(filename: &str) -> impl BufRead {
     BufReader::new(std::fs::File::open(filename).expect("Couldn't open xz file"))
 }
 
-criterion_group!(benches, bench_decompression);
+criterion_group!(benches, bench_decomp);
 criterion_main!(benches);
